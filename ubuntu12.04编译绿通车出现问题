@@ -1,0 +1,105 @@
+1. 设置java 环境变量：
+
+export JAVA_HOME=`cd /home/wangyibo/jdk1.6.0_37/ && pwd`
+export JDK_DIR=$JAVA_HOME
+export JDK_HOME=$JAVA_HOME
+export PATH=$JAVA_HOME/bin:$PATH
+
+2.  
+
+如果在编译android的时候碰到如下提示：
+
+external/ubifs/mkfs.ubifs/compr.c:27: 致命错误： lzo/lzo1x.h：没有那个文件或目录
+
+英文为:
+
+If you received this error message:
+
+external/mtd-utils/mkfs.ubifs/compr.c:28: fatal error: lzo/lzo1x.h: No such file or directory
+
+Then just install this package:
+
+$ sudo apt-get install liblzo2-dev
+
+1. sys/acl.h: No such file or directory  --> sudo apt-get install 
+
+libacl1-dev
+
+ 2. compr_lzo.c:29:23: error: lzo/lzo1x.h: No such file or directory  --> 
+sudo apt-get install liblzo-dev (Maybe use liblzo2-dev replace it)
+
+ 3. uuid/uuid.h: No such file or directory --> sudo apt-get install 
+uuid-dev
+
+
+3. 
+"mkimage" command not found - U-Boot images will not be built
+make[2]: *** [arch/arm/boot/uImage] 错误 1
+make[1]: *** [uImage] 错误 2
+make[1]:正在离开目录 `/work2/tq/TQIMX6_android-4.3/kernel_imx'
+make: *** [out/target/product/sabresd_6dq/kernel] 错误 2
+make: *** 正在等待未完成的任务....
+
+/work2/tq/TQIMX6_android-4.3/bootable/bootloader/uboot-imx/tools/
+
+root@wubingzhong-ubuntu:/work2/tq/TQIMX6_android-4.3/bootable/bootloader/uboot-imx/tools# cp mkimage /usr/bin/
+
+ (mkimage 见附件) 
+
+
+"mkimage" command not found - U-Boot images will not be built
+
+如果使用make uImage 则能生成由uboot 引导的内核文件， 
+需要用到
+uboot/tools/mkimage，可以在/etc/bashrc 文件末加入一下语句：
+export 
+PATH:=$PATH:/usr/src/arm/u-boot-1.1.5/tools
+这样就能直接引用mkimage 命令。
+
+前提是uboot/tools目录下有mkimage这个工具，需要编译才能生成：
+
+    修改Makefile
+    找到
+    ifeq($(ARCH),arm)
+    CROSS_COMPILE 
+=
+    改成
+    ifeq($(ARCH),arm)
+    CROSS_COMPILE = 
+arm-softfloat-linux-gnu-
+
+    （CROSS_COMPILE = #arm-none-linux-gnueabi-  经测试也可以）
+    make 
+distclean
+    make at91sam9260ek_config
+    make
+
+生成的工具在uboot的tools里面，把这个mkimage考到/usr/bin下就行了：
+
+#cp mkimage /usr/bin/mkimage
+
+4. 
+
+/usr/bin/ld: cannot find -lz
+collect2: ld 返回 1
+make: *** [out/host/linux-x86/obj/EXECUTABLES/mkfs.ubifs_intermediates/mkfs.ubifs] 错误 1
+make: *** 正在等待未完成的任务....
+
+方法： root@wubingzhong-ubuntu:/work2/tq/TQIMX6_android-4.3#  apt-get install zlib1g-dev
+
+
+5. 
+Install: out/target/product/sabresd_6dq/system/lib/hw/lights.imx6.so
+cp: 目标"out/target/product/sabresd_6dq/system/lib/modules/" 不是目录
+Install: out/target/product/sabresd_6dq/system/lib/hw/local_time.default.so
+Warning: AndroidManifest.xml already defines versionCode (in http://schemas.android.com/apk/res/android); using existing value in manifest.
+Warning: AndroidManifest.xml already defines versionName (in http://schemas.android.com/apk/res/android); using existing value in manifest.
+Warning: AndroidManifest.xml already defines minSdkVersion (in http://schemas.android.com/apk/res/android); using existing value in manifest.
+Warning: AndroidManifest.xml already defines targetSdkVersion (in http://schemas.android.com/apk/res/android); using existing value in manifest.
+make: *** [out/target/product/sabresd_6dq/ramdisk.img] 错误 1
+make: *** 正在删除文件“out/target/product/sabresd_6dq/ramdisk.img”
+
+方法：
+root@wubingzhong-ubuntu:/work2/tq/TQIMX6_android-4.3# mkdir  out/target/product/sabresd_6dq/system/lib/modules/
+root@wubingzhong-ubuntu:/work2/tq/TQIMX6_android-4.3# chmod 777  out/target/product/sabresd_6dq/system/lib/modules/
+
