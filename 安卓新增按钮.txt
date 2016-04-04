@@ -1,0 +1,103 @@
+当我们修改了frameworks后可能出现：
+make: *** [out/target/common/obj/PACKAGING/checkapi-current-timestamp] 错误 38
+解决办法：make update-api
+
+
+在Android中添加物理按键：KEYCODE_HELP
+1、Android 增加按键：
+ScanCode -> KeyCodeLabel -> KeyCode -> Keyevent
+-----
+1) 键扫描码ScanCode是由linux的Input驱动框架定义的整数类型，可参考input.h头文件（./external/kernel-headers/original/linux/input.h）。
+2) 按键码（KeyCode），这个按键码是一个整数，在上层的JAVA程序中主要通过这个值来判断系统的实现。
+----
+实现过程：
+1， ScanCode -> KeyCodeLabel。
+键盘布局文件(*.kl) 把ScanCode转换为KeyCodeLabel。 *.kl文件在源码的devices文件夹中如（/device/rockchip/rk30sdk_bnd/rk29-keypad.kl）或设备中的/system/usr/keylayout/*.kl。
+key 138 HELP //这里的HELP就是我们定义的android键值的字符形式，138则是linux键值， HELP 不能无缘无故就使用，必然有定义位置，这个位置就是KeycodeLabels.h
+2，KeyCodeLabel -> KeyCode。
+通过查找KEYCODES[]数组，得到KeyCodeLabel字符串对应的KeyCode值。KEYCODES[]在文件/frameworks/base/include/androidfw/KeycodeLabels.h 中。
+这里定义的实际上是我们在kl文件，也就是linux key到android key的一个映射表中的linux键值和android键值的名称；比如rk29-keypad.kl：
+static const KeycodeLabel KEYCODES[] = {
+...
+{ "ASSIST", 219 },
+//add by hcm
+{ "HELP", 220 },
+在/frameworks/native/include/android/keycodes.h中定义KeyCode的枚举值。
+enum {
+....
+AKEYCODE_ASSIST = 219,
+//add by hcm
+AKEYCODE_HELP = 220,
+......}
+在EventHub.cpp中加载并解析这个map：rk29-keypad.kl，那么得到的是linux键值138为key的string，这个string就是HELP，有了上面这个KEYCODES数组，就可以获得它对应的android键值了。
+
+
+
+
+3，KeyCode -> Keyevent。
+KeyEvent.java中的对应KeyCode：（文件路径：/frameworks/base/core/java/android/view/KeyEvent.java）。
+KeyEvent.java中有一个非常重要的提示，那就是我们自己填特殊按键的流程，但是我这是瑞芯微3168,Android4.2.2的源代码，源码中的注释路径是有误的！：
+// NOTE: If you add a new keycode here you must also add it to:
+// isSystem()
+// native/include/android/keycodes.h
+// frameworks/base/include/ui/KeycodeLabels.h 应该为：/frameworks/base/include/androidfw/KeycodeLabels.h
+// external/webkit/WebKit/android/plugins/ANPKeyCodes.h
+// frameworks/base/core/res/res/values/attrs.xml
+// emulator?
+// LAST_KEYCODE
+// KEYCODE_SYMBOLIC_NAMES
+//
+// Also Android currently does not reserve code ranges for vendor-
+// specific key codes. If you have new key codes to have, you
+// MUST contribute a patch to the open source project to define
+// those new codes. This is intended to maintain a consistent
+// set of key code definitions across all Android devices.
+如果改动了KeyEvent，影响到API则需要调用make update-api。
+LAST_KEYCODE修改：
+/** Key code constant: add by hcm, help key. */
+public static final int KEYCODE_HELP = 220; 
+private static final int LAST_KEYCODE = KEYCODE_HELP;
+....
+（KEYCODE_SYMBOLIC_NAMES修改）
+names.append(KEYCODE_ASSIST, "KEYCODE_ASSIST");
+names.append(KEYCODE_HELP, "KEYCODE_HELP");
+....
+4、根据上面提示修改isSystem()，代码跟踪：
+isSystem() 在/frameworks/base/core/java/android/view/KeyEvent.java
+public final boolean isSystem() {
+return native_isSystemKey(mKeyCode);
+}
+
+/frameworks/base/core/jni/android_view_KeyEvent.cpp
+static jboolean native_isSystemKey(JNIEnv* env, jobject clazz, jint keyCode) {
+return KeyEvent::isSystemKey(keyCode);
+}
+
+/frameworks/base/libs/androidfw/Input.cpp
+bool KeyEvent::isSystemKey(int32_t keyCode) {
+switch (keyCode) {
+……
+case AKEYCODE_SEARCH:
+//add by hcm
+case AKEYCODE_HELP:
+}
+}
+5、/external/webkit/Source/WebKit/android/plugins/ANPKeyCodes.h
+enum ANPKeyCodes {
+……
+
+kAppSwitch_ANPKeyCode = 187,
+//add by hcm
+kHelp_ANPKeyCode = 220,
+};
+6、frameworks/base/core/res/res/values/attrs.xml
+
+.....................
+
+
+
+
+
+
+
+这些操作完成了之后，就完成了linux键到android的键值映射。也就是android中多了一个KEYCODE_HELP它的值是220.
