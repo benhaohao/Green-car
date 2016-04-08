@@ -4,4 +4,6 @@
 4.非常方便 。
 
 
-git clone git@github.com:benhaohao/repos.git 
+git clone git@github.com:benhaohao/repos.git
+
+www.cnblogs.com/fanyong/p/3424501.html   参考网址 
