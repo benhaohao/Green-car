@@ -1,0 +1,8 @@
+1.xxx
+
+2. type B update protocol  have extern
+
+
+触屏好像多了一句话，好像跟type B协议不太一样，为啥子   
+
+BTN_TOUCH 
