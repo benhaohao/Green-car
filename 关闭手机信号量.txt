@@ -1,0 +1,5 @@
+
+
+ base/packages/SystemUI/src/com/android/systemui/statusbar/phone/PhoneStatusBar.java
+
+  注释掉了关于 signal_cluster的相关代码 
