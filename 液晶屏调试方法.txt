@@ -1,3 +1,3 @@
 http://blog.csdn.net/longxiaowu/article/details/24319933  见网址
 
-亮边问题解决， 解决方法是在 改了 VSL HSL 的有效沿
+亮边问题解决， 解决方法是在 改了数据输入是在 docclock时钟 的上升还是 下降沿

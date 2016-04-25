@@ -1,0 +1,5 @@
+
+
+三个非常重要结构提  hw_module_t hw_device_t hw_module_methos_t
+
+子结构体与父结构体的一个继承问题 ，比如  子结构体继承了 父结构体

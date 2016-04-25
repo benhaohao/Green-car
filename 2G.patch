@@ -1,0 +1,54 @@
+diff --git a/bootable/bootloader/uboot-imx/include/configs/mx6q_sabresd.h b/bootable/bootloader/uboot-imx/include/configs/mx6q_sabresd.h
+index 33dba8d..0b4bdf4 100644
+--- a/bootable/bootloader/uboot-imx/include/configs/mx6q_sabresd.h
++++ b/bootable/bootloader/uboot-imx/include/configs/mx6q_sabresd.h
+@@ -298,7 +298,7 @@
+  */
+ #define CONFIG_NR_DRAM_BANKS	1
+ #define PHYS_SDRAM_1		CSD0_DDR_BASE_ADDR
+-#define PHYS_SDRAM_1_SIZE	(1u * 1024 * 1024 * 1024)
++#define PHYS_SDRAM_1_SIZE	(2u * 1024 * 1024 * 1024)
+ #define iomem_valid_addr(addr, size) \
+ 	(addr >= PHYS_SDRAM_1 && addr <= (PHYS_SDRAM_1 + PHYS_SDRAM_1_SIZE))
+ 
+diff --git a/kernel_imx/arch/arm/mach-mx6/board-mx6q_sabresd.c b/kernel_imx/arch/arm/mach-mx6/board-mx6q_sabresd.c
+index 8c5717a..c307393 100644
+--- a/kernel_imx/arch/arm/mach-mx6/board-mx6q_sabresd.c
++++ b/kernel_imx/arch/arm/mach-mx6/board-mx6q_sabresd.c
+@@ -1523,7 +1523,7 @@ static void __init mx6q_sabresd_reserve(void)
+ 	if (fb_array_size > 0 && sabresd_fb_data[0].res_base[0] &&
+ 	        sabresd_fb_data[0].res_size[0])
+ 	{
+-		if (sabresd_fb_data[0].res_base[0] > SZ_1G)
++		if (sabresd_fb_data[0].res_base[0] > SZ_2G)
+ 			printk(KERN_INFO"UI Performance downgrade with FB phys address %x!\n",
+ 			       sabresd_fb_data[0].res_base[0]);
+ 		memblock_reserve(sabresd_fb_data[0].res_base[0],
+@@ -1539,13 +1539,13 @@ static void __init mx6q_sabresd_reserve(void)
+ 		{
+ 			/* Reserve for other background buffer. */
+ 			phys = memblock_alloc_base(sabresd_fb_data[i].res_size[0],
+-			                           SZ_4K, SZ_1G);
++			                           SZ_4K, SZ_2G);
+ 			memblock_remove(phys, sabresd_fb_data[i].res_size[0]);
+ 			sabresd_fb_data[i].res_base[0] = phys;
+ 		}
+ 
+ #ifdef CONFIG_ANDROID_RAM_CONSOLE
+-	phys = memblock_alloc_base(SZ_1M, SZ_4K, SZ_1G);
++	phys = memblock_alloc_base(SZ_1M, SZ_4K, SZ_2G);
+ 	memblock_remove(phys, SZ_1M);
+ 	memblock_free(phys, SZ_1M);
+ 	ram_console_resource.start = phys;
+@@ -1555,9 +1555,9 @@ static void __init mx6q_sabresd_reserve(void)
+ #if defined(CONFIG_MXC_GPU_VIV) || defined(CONFIG_MXC_GPU_VIV_MODULE)
+ 	if (imx6q_gpu_pdata.reserved_mem_size)
+ 	{
+-		//----------------------alloc SZ_1G---------------------
++		//----------------------alloc SZ_2G---------------------
+ 		phys = memblock_alloc_base(imx6q_gpu_pdata.reserved_mem_size,
+-		                           SZ_4K, SZ_1G);
++		                           SZ_4K, SZ_2G);
+ 		memblock_remove(phys, imx6q_gpu_pdata.reserved_mem_size);
+ 		imx6q_gpu_pdata.reserved_mem_base = phys;
+ 	}

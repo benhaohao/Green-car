@@ -1,0 +1,23 @@
+du -sh 看此文件夹 大小  、
+
+df -h 看整体硬盘的使用情况
+
+
+同一个文件 shift +8 查看同一个人做
+
+shift insert 就是在终端里面 鼠标选中一个字段 copy 一个 字段到终端信息的地方
+
+.config 是最终kernel 配置的信息列表 CONFIG_XXXXX
+
+System.map 这里面是一些 module_init(xxx)  就是这个xxxx。所以可以找到特方便驱动
+
+
+suspend resume   一个 是 休眠  一个是唤醒 
+
+查 sys/class/有各种文件 ，然后收文件名能够在kernel里面收到这个值所对应的驱动名字
+
+sys/class下面的文件都是可以直接写的，echo 0 > xxx 就可以写某个属性了
+
+cat /proc/meminfo  这个指令可以看系统的 DDR 大小
+df 可以看系统的 存储空间
+cat /proc/cmdline 可以看uboot 传下去的值
