@@ -1,0 +1,14 @@
+class 是在 /sys下面创建一个类。 然后 device_register 是将在 相关类下面创建一个节点。 
+
+
+platform_device_register
+
+platform_device_unregister
+
+
+platform_driver_register
+
+
+platform_driver_register
+
+

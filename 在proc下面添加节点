@@ -1,0 +1,4 @@
+1. proc_mkdir（） 在 proc下面添加一个 目录
+2.create_proc_entry() 在proc目录下面创建一个节点
+3.write_proc read_proc 在节点中创建两个function ，读或者写
+4.remove_proc_entry() 移除 proc下面的节点

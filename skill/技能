@@ -21,3 +21,6 @@ sys/class下面的文件都是可以直接写的，echo 0 > xxx 就可以写某�
 cat /proc/meminfo  这个指令可以看系统的 DDR 大小
 df 可以看系统的 存储空间
 cat /proc/cmdline 可以看uboot 传下去的值
+
+
+create_class 会在 sys class下面创建节点。 然后在 调用 device_register的时候会将节点相关信息加载到sys下面
